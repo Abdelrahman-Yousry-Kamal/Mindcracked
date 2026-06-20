@@ -62,3 +62,21 @@ train_loader = DataLoader(
                   torch.tensor(y_train, dtype=torch.long)), 
     batch_size=64, shuffle=True
 )
+
+
+# ==========================================
+# 3. MODEL & OPTIMIZER (PINN-SPECIFIC)
+# ==========================================
+model = NM_PINN(num_channels=22, F1=8, D=2, num_classes=4, fs=250).to(device)
+
+# Differential Learning Rates for Physics Parameters
+physics_param_names = {'tau_E', 'tau_I', 'w_EE', 'w_EI', 'w_IE', 'w_II', 'P', 'Q'}
+physics_params = [p for n, p in model.named_parameters() if any(x in n for x in physics_param_names)]
+base_params = [p for n, p in model.named_parameters() if not any(x in n for x in physics_param_names)]
+
+optimizer = optim.AdamW([
+    {'params': base_params, 'lr': 1e-3},
+    {'params': physics_params, 'lr': 1e-4}
+], weight_decay=1e-3)
+
+criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
