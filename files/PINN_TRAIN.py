@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from preprocessing import BCICausalPreprocessor
-from PINN import NM_PINN
+from models.PINN import NM_PINN
 
 
 # ==========================================
