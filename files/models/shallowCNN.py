@@ -50,7 +50,7 @@ class SCNN(nn.Module):
         )
         
         self.layer2 = nn.Sequential(
-            nn.AvgPool2d((1,pk1), stride=(1,pk2)),
+            nn.AvgPool2d((1,pk1), stride = (1,pk2)),
         )
 
         self.layer3 = nn.Sequential(
