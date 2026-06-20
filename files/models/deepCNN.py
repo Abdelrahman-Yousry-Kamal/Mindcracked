@@ -10,6 +10,9 @@ DCNN(nb_classes=4,
         Samples=500,
         dropoutRate=0.5,
         )
+
+overfit on 300 epoch (93%->79.5%)
+normalization in the loss or less epochs is recommended
 """
 
 
@@ -30,7 +33,7 @@ class DCNN(nn.Module):
                 in_channels=1,
                 out_channels=25,
                 kernel_size=(1, kernLength),
-                bias=False,
+                bias=True,
                 max_norm=2,
             ),
 
@@ -38,7 +41,7 @@ class DCNN(nn.Module):
                 in_channels=25,
                 out_channels=25,
                 kernel_size=(Chans, 1),
-                bias=False,
+                bias=True,
                 max_norm=2,
             ),
 
@@ -53,7 +56,7 @@ class DCNN(nn.Module):
                 in_channels=25,
                 out_channels=50,
                 kernel_size=(1, kernLength),
-                bias=False,
+                bias=True,
                 max_norm=2,
             ),
             nn.BatchNorm2d(50, eps=1e-05, momentum=0.1),
@@ -65,7 +68,7 @@ class DCNN(nn.Module):
                 in_channels=50,
                 out_channels=100,
                 kernel_size=(1, kernLength),
-                bias=False,
+                bias=True,
                 max_norm=2,
             ),
             nn.BatchNorm2d(100, eps=1e-05, momentum=0.1),
@@ -77,7 +80,7 @@ class DCNN(nn.Module):
                 in_channels=100,
                 out_channels=200,
                 kernel_size=(1, kernLength),
-                bias=False,
+                bias=True,
                 max_norm=2,
             ),
             nn.BatchNorm2d(200, eps=1e-05, momentum=0.1),

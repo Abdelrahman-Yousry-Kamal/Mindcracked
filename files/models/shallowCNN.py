@@ -3,13 +3,15 @@ import torch.nn as nn
 
 from Mindcracked.files.layers.layers import Conv2dWithConstraint, LinearWithConstraint
 """
-used DCNN combination for comparisons:
+used SCNN combination for comparisons:
 
-DCNN(nb_classes=4,
+SCNN(nb_classes=4,
         Chans=22,
         Samples=500,
         dropoutRate=0.5,
         )
+
+overfits (100%)! 
 """
 
 
@@ -31,7 +33,7 @@ class SCNN(nn.Module):
                 in_channels=1,
                 out_channels=40,
                 kernel_size=(1, kernLength),
-                bias=False,
+                bias=True,
                 padding='same',
                 max_norm=2,
             ),
@@ -48,10 +50,11 @@ class SCNN(nn.Module):
         )
         
         self.layer2 = nn.Sequential(
-            nn.AvgPool2d((1,pk1), stride = (1,pk2)),
+            nn.AvgPool2d((1,pk1), stride=(1,pk2)),
         )
 
         self.layer3 = nn.Sequential(
+            nn.Flatten(),
             nn.Dropout(p=dropoutRate),
             LinearWithConstraint(40 * (((Samples - pk1) // pk2) + 1), nb_classes, max_norm=0.5)
         )
