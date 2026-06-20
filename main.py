@@ -95,8 +95,16 @@ def evaluate_accuracy_direct_raw(args):
         batch_size=64, shuffle=False
     )
 
+    # DYNAMIC ACCURACY LOAD ROUTE
     model = get_model('pinn', num_classes=args.num_classes).to(device)
-    weight_path = f"{args.model_path}/{args.dataset}/source_model.pth"
+    
+    # If a specific test model path is provided, use it; otherwise, fall back to the default source model
+    if args.test_model_path:
+        weight_path = args.test_model_path
+    else:
+        weight_path = f"{args.model_path}/{args.dataset}/source_model.pth"
+        
+    print(f"🧠 Loading validation target weights from: {weight_path}")
     model.load_state_dict(torch.load(weight_path, map_location=device))
     model.eval()
 
@@ -223,9 +231,11 @@ def main():
     parser.add_argument('--model_path', type=str, default='/content/ADV-TRA_EEG_BCI/model_path')
     parser.add_argument('--fingerprint_path', type=str, default='/content/ADV-TRA_EEG_BCI/fingerprint_path')
     
-    # NEW FLEXIBLE FOLDER ARGUMENT FOR VERIFICATION
+    # DYNAMIC TARGET SELECTION ARGUMENTS
     parser.add_argument('--verify_target', type=str, default='/content/ADV-TRA_EEG_BCI/attacks',
                         help="Path to the specific folder you want to batch verify")
+    parser.add_argument('--test_model_path', type=str, default='',
+                        help="Direct path to a specific model .pth checkpoint to evaluate accuracy on")
     
     parser.add_argument('--num_classes', type=int, default=4)
     parser.add_argument('--device', type=str, default='cuda')
@@ -257,13 +267,11 @@ def main():
         generate_trajectory(args, source_model)
         
     elif args.mode == 'verify':
-        # Verify the directory path exists safely
         target_folder = args.verify_target
         if not os.path.exists(target_folder):
             print(f"❌ Error: Specified verify target folder does not exist: {target_folder}")
             return
             
-        # Scan exclusively inside the specified folder for checkpoint targets
         suspect_files = glob.glob(os.path.join(target_folder, "*.pth")) + glob.glob(os.path.join(target_folder, "*.pt"))
         
         if not suspect_files:
@@ -279,7 +287,6 @@ def main():
             print(f"🛰️  [{file_idx}/{len(suspect_files)}] Auditing Checkpoint: {filename}")
             print(f"────────────────────────────────────────────────────────────")
             
-            # White-Box PINN matching pass
             try:
                 from utils.adv_gen import verify_trajectory
                 suspect_model = get_model('pinn', num_classes=args.num_classes).to(args.device)
@@ -288,7 +295,6 @@ def main():
                 verify_trajectory(args, suspect_model)
                 
             except RuntimeError:
-                # Fallback to Architecture-Agnostic Black-Box pipeline pass
                 print("-> Architecture Mismatch. Activating Pure Black-Box functional evaluation...")
                 raw_checkpoint = torch.load(filepath, map_location=args.device)
                 verify_pure_blackbox_trajectory(args, raw_checkpoint)
