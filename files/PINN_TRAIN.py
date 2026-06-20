@@ -52,3 +52,13 @@ np.savez(f'/kaggle/working/pinn_stats_sub{subject_id}.npz',
          mean=train_mean, std=train_std, eog_weights=preprocessor.eog_weights)
 
 print(f"Data prepared! Shape: {X_train_norm.shape}\n")
+
+
+# ==========================================
+# 2. DATALOADER
+# ==========================================
+train_loader = DataLoader(
+    TensorDataset(torch.tensor(X_train_norm, dtype=torch.float32), 
+                  torch.tensor(y_train, dtype=torch.long)), 
+    batch_size=64, shuffle=True
+)
