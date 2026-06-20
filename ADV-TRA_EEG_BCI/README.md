@@ -1,6 +1,6 @@
 # BCI Intellectual Property Fingerprinting & Verification Framework
 
-This repository implements a non-intrusive IP protection framework tailored for **Physics-Informed Neural Networks (PINNs)** classifying motor imagery EEG signals. By generating stable, adversarial trajectory fingerprints locked into the model's underlying cortical dynamics, we create a robust "DNA watermark" capable of proving model ownership even after aggressive fine-tuning or distillation attacks across mismatched network architectures.
+This repository implements a non-intrusive IP protection framework tailored for **Physics-Informed Neural Networks (PINNs)** classifying motor imagery EEG signals. By generating stable, adversarial trajectory fingerprints locked into the model's underlying cortical dynamics, we create a robust "DNA watermark" capable of proving model ownership even after aggressive fine-tuning or distillation attacks across mismatched network architectures. The method applied in this framework is based on [this paper](https://openreview.net/forum?id=YwpL0BVxts).
 
 ---
 
