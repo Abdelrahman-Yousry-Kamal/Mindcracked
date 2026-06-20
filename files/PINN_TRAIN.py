@@ -131,3 +131,10 @@ for epoch in range(epochs):
               f"WC: {running_wc_loss/len(train_loader):.4f} | "
               f"Ortho: {running_ortho_loss/len(train_loader):.4f} | "
               f"Acc: {100 * correct / total:.2f}%")
+
+
+# ==========================================
+# 5. SAVE MODEL
+# ==========================================
+torch.save(model.state_dict(), f"/kaggle/working/pinn_subject{subject_id}.pth")
+print(f"\nModel saved: pinn_subject{subject_id}.pth")
