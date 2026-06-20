@@ -80,3 +80,54 @@ optimizer = optim.AdamW([
 ], weight_decay=1e-3)
 
 criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+
+
+# ==========================================
+# 4. TRAINING LOOP
+# ==========================================
+epochs = 350
+max_lambda_wc = 0.002   # Wilson-Cowan ODE residual weight
+lambda_ortho = 0.01     # Spatial orthogonality constraint weight
+
+print(f"Starting PINN training for Subject {subject_id}...\n")
+
+for epoch in range(epochs):
+    model.train()
+    running_ce_loss = running_wc_loss = running_ortho_loss = 0.0
+    correct = total = 0
+
+    # Dynamic lambda scaling with warmup
+    current_lambda_wc = 0.0 if epoch < 10 else max_lambda_wc * ((epoch - 10) / (epochs - 10))
+
+    for inputs, labels in train_loader:
+        inputs, labels = inputs.to(device), labels.to(device)
+        optimizer.zero_grad()
+
+        # Forward pass: model returns logits and regularization losses
+        logits, wc_loss, ortho_loss = model(inputs)
+
+        # Composite loss
+        ce_loss = criterion(logits, labels)
+        total_loss = ce_loss + (current_lambda_wc * wc_loss) + (lambda_ortho * ortho_loss)
+
+        # Backward pass
+        total_loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        optimizer.step()
+
+        # Track metrics
+        running_ce_loss += ce_loss.item()
+        running_wc_loss += wc_loss.item()
+        running_ortho_loss += ortho_loss.item()
+
+        _, predicted = torch.max(logits.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+    # Logging
+    if (epoch + 1) % 10 == 0 or epoch == 0:
+        print(f"Epoch [{epoch+1}/{epochs}] | L_wc: {current_lambda_wc:.3f} | "
+              f"CE: {running_ce_loss/len(train_loader):.4f} | "
+              f"WC: {running_wc_loss/len(train_loader):.4f} | "
+              f"Ortho: {running_ortho_loss/len(train_loader):.4f} | "
+              f"Acc: {100 * correct / total:.2f}%")
