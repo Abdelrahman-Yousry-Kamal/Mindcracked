@@ -8,7 +8,7 @@ The core idea: a model owner generates a small set of **adversarial trajectory f
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```text
 Mindcracked/
@@ -26,7 +26,7 @@ Mindcracked/
 
 ---
 
-## 🧠 The Problem
+## The Problem
 
 Motor-imagery BCI models (e.g. classifying *Left Hand / Right Hand / Both Feet / Tongue* imagery from EEG) are expensive to train and tune — they require carefully cleaned signal data, subject-specific calibration, and physics-aware architectures. Once a trained model is exposed (via an API, a leaked checkpoint, or a research release), it can be:
 
@@ -38,7 +38,7 @@ while still functionally relying on the stolen decision boundaries. Mindcracked 
 
 ---
 
-## 🔁 How It Fits Together
+## How It Fits Together
 
 ```text
             ┌───────────────┐
@@ -69,7 +69,7 @@ while still functionally relying on the stolen decision boundaries. Mindcracked 
 
 ---
 
-## 🧩 Component Details
+## Component Details
 
 ### 1. `files/` — EEG Model Zoo & Training Pipelines
 
@@ -98,11 +98,11 @@ A 7-step pipeline (see its own README for full command-by-command detail):
 
 Implements the adversarial side of the project: attacks against the fingerprinted PINN intended to test whether an adversary can erase, evade, or launder the watermark — for example by fine-tuning on new data, pruning weights, or distilling into one of the alternative architectures from `files/models/`. These attack outputs are exactly what `ADV-TRA_EEG_BCI`'s verifier is built to catch.
 
-> ℹ️ This section is based on a summary description rather than a full code review of the folder. If you'd like a detailed breakdown of the specific attacks implemented here (algorithms, parameters, scripts), share the folder contents and this section can be expanded.
+> This section is based on a summary description rather than a full code review of the folder. If you'd like a detailed breakdown of the specific attacks implemented here (algorithms, parameters, scripts), share the folder contents and this section can be expanded.
 
 ---
 
-## 🛠️ Setup
+## Setup
 
 ```bash
 pip install -r files/requirements.txt
@@ -114,6 +114,6 @@ Most scripts assume Kaggle/Colab-style paths (`/kaggle/input/...`, `/content/...
 
 ---
 
-## 🎓 Project Context
+## Project Context
 
 This is a graduation project applying physics-informed deep learning and adversarial watermarking techniques to the problem of intellectual-property protection for brain-computer interface models — an emerging concern as BCI decoders move from research settings into deployed products and APIs.
